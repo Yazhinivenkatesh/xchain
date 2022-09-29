@@ -1,0 +1,12 @@
+syntax = "proto3";
+package yazhini.xchain.xchain;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/yazhini/xchain/x/xchain/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
