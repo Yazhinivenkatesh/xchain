@@ -1,0 +1,12 @@
+syntax = "proto3";
+package yazhini.xchain.mlm;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/yazhini/xchain/x/mlm/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}

@@ -97,6 +97,9 @@ import (
 
 	"github.com/yazhini/xchain/docs"
 
+	mlmmodule "github.com/yazhini/xchain/x/mlm"
+	mlmmodulekeeper "github.com/yazhini/xchain/x/mlm/keeper"
+	mlmmoduletypes "github.com/yazhini/xchain/x/mlm/types"
 	xchainmodule "github.com/yazhini/xchain/x/xchain"
 	xchainmodulekeeper "github.com/yazhini/xchain/x/xchain/keeper"
 	xchainmoduletypes "github.com/yazhini/xchain/x/xchain/types"
@@ -154,6 +157,7 @@ var (
 		vesting.AppModuleBasic{},
 		monitoringp.AppModuleBasic{},
 		xchainmodule.AppModuleBasic{},
+		mlmmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -166,6 +170,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		mlmmoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -226,6 +231,8 @@ type App struct {
 	ScopedMonitoringKeeper capabilitykeeper.ScopedKeeper
 
 	XchainKeeper xchainmodulekeeper.Keeper
+
+	MlmKeeper mlmmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -263,6 +270,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, monitoringptypes.StoreKey,
 		xchainmoduletypes.StoreKey,
+		mlmmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -384,6 +392,16 @@ func New(
 	)
 	xchainModule := xchainmodule.NewAppModule(appCodec, app.XchainKeeper, app.AccountKeeper, app.BankKeeper)
 
+	app.MlmKeeper = *mlmmodulekeeper.NewKeeper(
+		appCodec,
+		keys[mlmmoduletypes.StoreKey],
+		keys[mlmmoduletypes.MemStoreKey],
+		app.GetSubspace(mlmmoduletypes.ModuleName),
+
+		app.BankKeeper,
+	)
+	mlmModule := mlmmodule.NewAppModule(appCodec, app.MlmKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -425,6 +443,7 @@ func New(
 		transferModule,
 		monitoringModule,
 		xchainModule,
+		mlmModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -452,6 +471,7 @@ func New(
 		paramstypes.ModuleName,
 		monitoringptypes.ModuleName,
 		xchainmoduletypes.ModuleName,
+		mlmmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -475,6 +495,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		monitoringptypes.ModuleName,
 		xchainmoduletypes.ModuleName,
+		mlmmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -503,6 +524,7 @@ func New(
 		feegrant.ModuleName,
 		monitoringptypes.ModuleName,
 		xchainmoduletypes.ModuleName,
+		mlmmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -527,6 +549,7 @@ func New(
 		transferModule,
 		monitoringModule,
 		xchainModule,
+		mlmModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -717,6 +740,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(monitoringptypes.ModuleName)
 	paramsKeeper.Subspace(xchainmoduletypes.ModuleName)
+	paramsKeeper.Subspace(mlmmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
