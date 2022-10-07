@@ -23,6 +23,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc
 	google.golang.org/grpc v1.48.0
+	// github.com/golang/protobuf/protoc-gen-go v1.2.3
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

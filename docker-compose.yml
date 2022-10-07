@@ -2,7 +2,6 @@ version: "3"
 services:
   n1:
     container_name: node1
-    # image: custom:final
     build: .
     ports:
       - "26656-26657:26656-26657"
@@ -12,11 +11,10 @@ services:
       test:
         ipv4_address: 173.0.0.2
     volumes:
-      - node1_volume:/nodes/node1  
+      - ./nodes/node_01:/nodes/node1  
 
   n2:
     container_name: node2
-    # image: custom:final
     build: .
     ports:
       - "26666-26667:26656-26657"
@@ -26,7 +24,7 @@ services:
       test:
         ipv4_address: 173.0.0.3
     volumes:
-      - node2_volume:/nodes/node2  
+      - ./nodes/node_02:/nodes/node1  
 
 networks:
   test:
@@ -34,9 +32,6 @@ networks:
     ipam:
      config:
         - subnet: 173.0.0.0/16
-volumes:
-  node1_volume:
-  node2_volume:
 
 
 

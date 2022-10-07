@@ -17,10 +17,8 @@ RUN /build/ignite chain build
 FROM debian:10.11-slim as node
 WORKDIR /validator
 VOLUME [ "/nodes/node1/" ]
-VOLUME [ "/nodes/node2/" ]
 COPY --from=build  /go/bin/xchaind /validator/
 
-# RUN chmod 777 /validator/xchaind
 ENTRYPOINT ["/validator/xchaind",  "start", "--home", "/nodes/node1"]   
 
 
